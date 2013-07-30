@@ -1,0 +1,39 @@
+Thumbnailpolish usage notes 
+rev. 2013-07-30
+
+Requirements:
+imagemagick, make, libav, python
+
+Input requirements:
+This tool starts from a (writeable) mirror of the Thumbnails directory,
+which is expected to contain directories like
+
+Thumbnails/L001/C1.1
+Thumbnails/L001/C2.1
+Thumbnails/L001/C3.1
+...
+
+Copy the Makefile into your mirror of the thumbnails directory and run
+
+make configure
+
+and then
+
+make all
+
+This step has to open and close a few hundred thousand files,
+so it can take a long time.  It should create colorized thumbnails
+of each tile in the same directories as the originals, no more.
+
+After waiting for make all to finish, then run
+
+tileimages.py
+
+If all goes well, you should get intermediate per-lane images in the 
+individual directories, and a directory called Thumbnails/wholeimages
+that contains entire-flowcell composite images.
+
+This may not work for you, and is guaranteed to break the next time
+the illumina on-instrument software changes either its image formatting
+conventions or its file naming conventions.  
+

@@ -1,0 +1,106 @@
+
+
+The "thumbnail images" are black-and-white JPEG images that are 
+provided for the instrument operator to diagnose problems.  
+These images are low-resolution and only a small fraction of 
+the data could be recovered from the thumbnails; high-resolution 
+versions of the data exist but need not be retained after base 
+calling.
+
+The Thumbnail_Images/ directory contains numbered subdirectories 
+for each of the lanes.  The miseq instrument has one lane, the 
+hiseq has eight per cell.
+
+Thumbnail_Images/L001
+Thumbnail_Images/L002
+...
+Thumbnail_Images/L008 
+
+Inside of these are directories numbered for each cycle:
+The Thumbnail_Images/L003/C1.1
+The Thumbnail_Images/L003/C2.1
+..
+The Thumbnail_Images/L003/C9.1
+The Thumbnail_Images/L003/C10.1
+...
+The Thumbnail_Images/L003/C99.1
+The Thumbnail_Images/L003/C100.1
+...
+The Thumbnail_Images/L003/C309.1
+
+Inside of these are four black-and-white jpeg images for each 
+tile that are systematically named.
+
+On the miseq, the thumbnails end in a lower-case a,c,g, or t:
+"L%03d/C%d.1/c_%d_%d_%s.jpg" % (laneno, cycleno, laneno, tileno, nucleotide)
+
+L001/C10.1/s_3_1_a.jpg
+L001/C10.1/s_3_1_c.jpg
+L001/C10.1/s_3_1_g.jpg
+L001/C10.1/s_3_1_t.jpg
+L001/C10.1/s_3_2_a.jpg
+...
+L001/C10.1/s_3_12_g.jpg
+L001/C10.1/s_3_12_t.jpg
+
+On the hiseq, the first digit in the filename repeats the lane number, 
+and follows the same pattern, except that the tiles are numbered with 
+a set of 48 four-digit tile numbers
+in the set of ("11", "12", "13", "21", "22", "23") * ("01", "02", 03", "04", "05", "06", "07", "08") 
+
+L004/C10.1/s_4_1101_A.jpg
+L004/C10.1/s_4_1101_C.jpg
+L004/C10.1/s_4_1101_G.jpg
+L004/C10.1/s_4_1101_T.jpg
+L004/C10.1/s_4_1102_A.jpg
+...
+L004/C10.1/s_4_1103_A.jpg
+...
+L004/C10.1/s_4_1108_T.jpg
+L004/C10.1/s_4_1201_A.jpg
+..
+L004/C10.1/s_4_1308_T.jpg
+...
+L004/C10.1/s_4_2308_T.jpg
+
+or a set of 96 four-digit tile numbers ranging over  ("11", "12", "13", "21", "22", "23") * ("01", "02", 03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16")
+
+These images are 496 x 250 pixels, and contain an overview image of a 
+strip of the flowcell image and nine closeups of parts of the strip.
+
+Some of the instruments additionally produce 607x 600 pixel JPEGS named like 
+c1ku8acxx_c016_l4_t001_top_s3_t.jpg
+FLOWCELNO_cCYC_lL_tTIL_SID_sX_N.jpg
+
+These appear to be somewhat larger thumbnails of a subset of the cells, 
+presumably a debugging relic.
+
+There are four color channels from the instrument and only three colors 
+in the RGB color space.  Additionally, the four channels exhibit 
+crosstalk--two of the color channels respond to two of the nucleotide dyes. 
+The C channel seems to have spots for C and A and the T channel seems to 
+have spots for G and T.  The basecaller knows this, of course, but it 
+slightly complicates producing a false color diagnositc picture.
+
+To produce an attractive four-color image, it is helpful to take sums and 
+differences between the channels before color compositing.
+
+Red      =   "T - G + A"   (T and A)
+Green    =   "C"           (C and A)
+Blue     =   "G"           (G)
+
+This results in the mapping in the color images of
+A -> Yellow
+C -> Green
+G -> Blue
+T -> Red
+
+(Red-yellow-green-blue was much better than any false color mappings 
+including cyan or magenta)
+
+Sizes for the JPGs:
+s_1_1105_A.jpg 496x450   (older, 8-segments-per-strip)  "HISEQ"   6 * 8 tiles     607x600
+s_1_1116_A.jpg 542x450   (newer?, 16-segments-per-strip)  "HISEQ2"  6 * 16 tiles  607x600
+s_1_10_a.jpg   608x300    "MISEQ"  12  tiles
+s_1_100_t.jpg  576x300    "GAII"  100 tiles
+
