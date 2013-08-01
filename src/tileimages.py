@@ -27,41 +27,37 @@ def howmanycycles(somedir):
     return n
 
 def testhiseq(somedir):
-    testmiseq = "L001/C1.1/s_1_1_a.jpg"
-    testhiseq = "L001/C1.1/s_1_1101_A.jpg"
-    testhisq2 = "L001/C1.1/s_1_1112_A.jpg"
-    testgaII = "L001/C1.1/s_1_99_a.jpg"
-    if os.path.isfile(testhisq2):
-        return(2)
-    elif os.path.isfile(testhiseq):
-        return(1)
-    elif os.path.isfile(testgaII):
-        return(4)
-    elif os.path.isfile(testmiseq): 
-        return(3)
+    if os.path.isfile("L001/C1.1/s_1_1112_A.jpg"):
+        return("HISEQ2")
+    elif os.path.isfile("L001/C1.1/s_1_1101_A.jpg"):
+        return("HISEQ")
+    elif os.path.isfile("L001/C1.1/s_1_99_a.jpg"):
+        return("GAII")
+    elif os.path.isfile("L001/C1.1/s_1_1_a.jpg"): 
+        return("MISEQ")
     else:
         return(0)
 
 TYPE = testhiseq("") 
 
-if TYPE == 1:  # Hiseq with 8 x 6 tiles
+if TYPE == "HISEQ":  # Hiseq with 8 x 6 tiles
     print "Using HISEQ recipe"
     lane = [ '1', '2', '3', '4', '5', '6', '7', '8' ]
     iter1 = [ '11', '12', '13', '21', '22', '23' ] 
     iter2 = [ '01', '02', '03', '04', '05', '06', '07', '08' ] 
-elif TYPE == 2:  # HISEQ with 16 x 6 tiles
+elif TYPE == "HISEQ2":  # HISEQ with 16 x 6 tiles
     print "Using HISEQ2 recipe"
     lane = [ '1', '2', '3', '4', '5', '6', '7', '8' ]
     iter1 = [ '11', '12', '13', '21', '22', '23' ] 
     iter2 = [ '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16' ] 
-elif TYPE == 4:   # GAII   This needs adjustment
+elif TYPE == "GAII":   # GAII  doesn't count the same way
     print "Using GAII recipe"
     lane = [ '1', '2', '3', '4', '5', '6', '7', '8' ]
-    iter1 = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] 
-    iter2 = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] 
-    tiles = [ "%d" % i for i in range(0, 50)]
+    tiles = [ "%d" % i for i in range(1, 51)]
     tile2 = [ "%d" % i for i in range(100, 50, -1)]
-elif TYPE == 3 : # MISEQ recipe
+    iter2 = tiles   # we use iter2 to name the intermediates
+    gaiitiles = zip(tiles, tile2)
+elif TYPE == "MISEQ" : # MISEQ recipe
     print "Using MISEQ recipe"
     lane = [ "1" ]
     iter1 = [""] 
@@ -78,21 +74,34 @@ for l1 in lane:
   #     create set of strips "org"
         srcdir = "L00%s/C%s.1" % (l1, j )
         destdir = "L00%s/C%s.1" % (l1, j )
-        for i2 in iter2:
-            filelist = []
-            for i1 in iter1:
-                srcdir = "L00%s/C%s.1" % (l1, j )
-                filelist.append(srcdir + "/s_%s_%s%s_crop.gif" % ( l1, i1, i2) )
-            tilefileg = destdir + "/org_%02d_%03d.gif" % (int(i2), j )  
-            if not os.path.isfile( tilefileg ):
-                if os.path.isfile(filelist[0]) :
-                    execute(    "convert +append " + " ".join(filelist) + " " + tilefileg ) 
+        if TYPE != "GAII" :
+            for i2 in iter2:
+                filelist = []
+                for i1 in iter1:
+                    filelist.append(srcdir + "/s_%s_%s%s_crop.gif" % ( l1, i1, i2) )
+                tilefileg = destdir + "/org_%02d_%03d.gif" % (int(i2), j )
+                if not os.path.isfile( tilefileg ):
+                    if os.path.isfile(filelist[0]) :
+                        execute( "convert +append " + " ".join(filelist) + " " + tilefileg ) 
+                    else:
+                        print "skipping creating", tilefileg, "can't find", filelist[0]
+                else: 
+                    print "skipping creating", tilefileg, "since it already exists"
+        else:  # TYPE == "GAII"
+            for (counter, pair) in enumerate(gaiitiles):
+                filelist = []
+                for i1 in pair:
+                    filelist.append(srcdir + "/s_%s_%s_crop.gif" % ( l1, i1) )
+                tilefileg = destdir + "/org_%02d_%03d.gif" % (counter + 1, j )
+                if not os.path.isfile( tilefileg ):
+                    if os.path.isfile(filelist[0]) :
+                        execute( "convert +append " + " ".join(filelist) + " " + tilefileg )
+                    else:
+                        print "skipping creating", tilefileg, "can't find", filelist[0]
                 else:
-                    print "skipping creating", tilefileg, "can't find", filelist[0]
-            else: 
-                print "skipping creating", tilefileg, "since it already exists"
-for l1 in lane:
-    for j in range(1, NUMCYCLES+1):
+                    print "skipping creating", tilefileg, "since it already exists"
+
+  #     create set of strips "orh" in wholeimages
         srcdir = "L00%s/C%s.1" % (l1, j )
         destdir = "wholeimages"
         filelist = []
@@ -100,14 +109,13 @@ for l1 in lane:
             tilefileg = srcdir + "/org_%02d_%03d.gif" % (int(i2), j )
             filelist.append(tilefileg) 
 
-  #     create set of strips "orh"
         tilefileh = destdir + "/orh-%s_%03d.gif" % (l1, j)
         if os.path.isfile( tilefileh ): 
             print "skipping creation of %s since %s already exists" % ( tilefileh, tilefileh )
         elif os.path.isfile( filelist[0] ) and not TYPE :
-            execute(    "convert -append " + " ".join(filelist) + " "+ tilefileh  )
-        elif os.path.isfile( filelist[0]  ) and TYPE :
-            execute(    "convert -append " + " ".join(filelist) + " "+ tilefileh  )
+            execute(    "convert -append " + " ".join(filelist) + " "+ tilefileh )
+        elif os.path.isfile( filelist[0] ) and TYPE :
+            execute(    "convert -append " + " ".join(filelist) + " "+ tilefileh )
         else:
             print "can't find requisite ", filelist[0] , "needed to build ", tilefileh
 
@@ -143,9 +151,9 @@ for j in range(1, NUMCYCLES+1):
 # create inset
     if not os.path.isfile( cellinsettarget ):
         if os.path.isfile( cellsmalltarget ):
-            if TYPE == 1 or TYPE == 2 :
+            if TYPE == "HISEQ" or TYPE == "HISEQ2" :
                 execute("convert %s  -page +700+200 L001/C%d.1/s_1_%s%s_crop2.gif  -mosaic %s" % (cellsmalltarget, j, iter1[0], iter2[0], cellinsettarget) )
-            if TYPE == 0  or TYPE > 2 :
+            if TYPE == "MISEQ" or TYPE == "GAII" :
                 execute("convert -append %s  L001/C%d.1/s_1_%s%s_crop2.gif  -mosaic %s" % (cellsmalltarget, j, iter1[0], iter2[0], cellinsettarget) )
         else:
             print "skipping creating", cellinsettarget, "because requisite", cellsmalltarget, "is missing"
@@ -162,7 +170,7 @@ for l1 in lane:
     for j in range(1, NUMCYCLES+1):
         orhfile = srcdir + "/orh-%s_%03d.gif" % (l1, j) 
         filelist.append(orhfile)
-    if not os.path.isfile( bigtile ):  
+    if not os.path.isfile( bigtile ):
         execute("convert                  -border 2 " + " ".join(filelist) + " +append " + bigtile ) 
     else:
         print "skipping creating", bigtile , "since it already exists"
@@ -175,9 +183,9 @@ for l1 in lane:
     else:
         print "skipping creating", smalltile 
 
-largecellmovie = destdir + "/cell-lg.mp4"
-smallcellmovie = destdir + "/cell-sm.mov"
-insetcellmovie = destdir + "/cell-in.mp4"
+largecellmovie = destdir + "/movie-lg.mp4"
+smallcellmovie = destdir + "/movie-sm.mov"
+insetcellmovie = destdir + "/movie-in.mp4"
 
 if not os.path.isfile(largecellmovie):
     execute("avconv -r 5 -i " + destdir + "/cell-%03d.gif  " + largecellmovie )
