@@ -54,8 +54,11 @@ elif TYPE == "GAII":   # GAII  doesn't count the same way
     print "Using GAII recipe"
     lane = [ '1', '2', '3', '4', '5', '6', '7', '8' ]
     tiles = [ "%d" % i for i in range(1, 51)]
+    tiles = [ "%d" % i for i in range(50, 0, -1)]
     tile2 = [ "%d" % i for i in range(100, 50, -1)]
-    iter2 = tiles   # we use iter2 to name the intermediates
+    tile2 = [ "%d" % i for i in range(51, 101)]
+    iter1 = [""] 
+    iter2 =  [ "%d" % i for i in range(1, 51)]    # we use iter2 to name the intermediates
     gaiitiles = zip(tiles, tile2)
 elif TYPE == "MISEQ" : # MISEQ recipe
     print "Using MISEQ recipe"
@@ -132,6 +135,7 @@ for j in range(1, NUMCYCLES+1):
     celltarget =  destdir + "/cell-%03d.gif" % (j,)
     cellsmalltarget = destdir + "/cell-%03d.small.gif" % (j,)
     cellinsettarget = destdir + "/cell-%03d.inset.gif" % (j,)
+    celltinytarget = destdir + "/cell-%03d.tiny.gif" % (j,)
 # create whole cell images
     if not os.path.isfile( celltarget ) : 
         if os.path.isfile( filelist[0] ) : 
@@ -144,6 +148,7 @@ for j in range(1, NUMCYCLES+1):
     if not os.path.isfile( cellsmalltarget )  :
         if os.path.isfile( celltarget ) :
             execute( "convert -resize 25% " + "%s %s" % ( celltarget, cellsmalltarget ))
+            execute( "convert -resize  5% " + "%s %s" % ( celltarget, celltinytarget ))
         else: 
             print "skipping creating", cellsmalltarget, "because requisite", celltarget, "not found"
     else:
