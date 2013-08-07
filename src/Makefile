@@ -9,7 +9,7 @@ DESTDIR = $(dir . )
 
 TYPE = $(shell head -n 1 type)
 
-configure:
+type:
 	identifyimagetype.sh
 
 # Different formats have different input files:  _a.jpg _c.jpg vs _A.jpg and _C.jpg
@@ -26,14 +26,17 @@ endif
 # This regular expression finds all the files in the target tree
 COLOR := $(subst _A.jpg,_color.gif,$(subst _a.jpg,_color.gif,$(wildcard $(SRCDIR)/*/*/s*_a.jpg $(SRCDIR)/*/*/s*_A.jpg )))
 
-CROP1 := $(subst _color.gif,_crop.gif,$(COLOR))
-CROP2 := $(subst _color.gif,_crop2.gif,$(COLOR))
+CROP1 := $(subst _color.gif,_crop.gif,$(COLOR)) 
+CROP2 := $(subst _color.gif,_crop2.gif,$(COLOR)) 
 
-all:  $(COLOR) $(CROP1) $(CROP2)
+composite: 
+	tileimages.py 
 
-color: $(COLOR) 
+all:  $(COLOR) $(CROP1) $(CROP2)  type
 
-crop: $(CROP1) $(CROP2)
+color: $(COLOR) type
+
+crop: $(CROP1) $(CROP2) type
 
 %_1.gif : 
 ifeq ($(UPPER),0)
