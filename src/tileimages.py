@@ -35,7 +35,15 @@ def testhiseq(somedir):
         return("GAII")
     elif os.path.isfile("L001/C1.1/s_1_1_a.jpg"): 
         return("MISEQ")
-    else:
+    elif os.path.isfile("L001/C1.1/s_1_1114_a.jpg"): 
+        return("MISEQ2")
+    else: 
+        try:
+            a = open("type").read().strip() 
+            print "GOT it "+ a
+            return(a)
+        except IOError:
+            pass
         return(0)
 
 TYPE = testhiseq("") 
@@ -65,6 +73,11 @@ elif TYPE == "MISEQ" : # MISEQ recipe
     lane = [ "1" ]
     iter1 = [""] 
     iter2 = ["1", "2", "3", "4", "5", "6", "7", "8"] 
+elif TYPE == "MISEQ2" : # MISEQ2 recipe
+    print "Using MISEQ2 recipe"
+    lane = [ "1" ]
+    iter1 = [ '11', '21']
+    iter2 = [ '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14'] 
 else:
     sys.exit("Can't identify format")
 
@@ -107,6 +120,8 @@ for l1 in lane:
   #     create set of strips "orh" in wholeimages
         srcdir = "L00%s/C%s.1" % (l1, j )
         destdir = "wholeimages"
+        if not os.path.isdir( destdir ) :
+            os.system("mkdir " + destdir ) 
         filelist = []
         for i2 in iter2:
             tilefileg = srcdir + "/org_%02d_%03d.gif" % (int(i2), j )
@@ -158,7 +173,7 @@ for j in range(1, NUMCYCLES+1):
         if os.path.isfile( cellsmalltarget ):
             if TYPE == "HISEQ" or TYPE == "HISEQ2" :
                 execute("convert %s  -page +700+200 L001/C%d.1/s_1_%s%s_crop2.gif  -mosaic %s" % (cellsmalltarget, j, iter1[0], iter2[0], cellinsettarget) )
-            if TYPE == "MISEQ" or TYPE == "GAII" :
+            if TYPE == "MISEQ" or TYPE == "GAII" or TYPE == "MISEQ2" :
                 execute("convert -append %s  L001/C%d.1/s_1_%s%s_crop2.gif  -mosaic %s" % (cellsmalltarget, j, iter1[0], iter2[0], cellinsettarget) )
         else:
             print "skipping creating", cellinsettarget, "because requisite", cellsmalltarget, "is missing"
@@ -167,7 +182,7 @@ for j in range(1, NUMCYCLES+1):
 
 for l1 in lane:
     srcdir = "wholeimages" 
-    desttdir = "wholeimages"
+    destdir = "wholeimages"
     bigtile =   destdir + "/tile-lane%s.big.gif" % (l1, )
     smalltile = destdir + "/tile-lane%s.small.gif" % (l1, )
     tinytile =  destdir + "/tile-lane%s.tiny.gif" % (l1, )
@@ -193,17 +208,16 @@ smallcellmovie = destdir + "/movie-sm.mov"
 insetcellmovie = destdir + "/movie-in.mp4"
 
 if not os.path.isfile(largecellmovie):
-    execute("avconv -r 5 -i " + destdir + "/cell-%03d.gif  " + largecellmovie )
+    execute("avconv -r 5 -i " + destdir + "/cell-%03d.gif  " + largecellmovie )  # default compression ca. -q 31 ok
 else:
     print "skipping creating", largecellmovie
 
 if not os.path.isfile(smallcellmovie):
-    execute("avconv -r 5 -i " + destdir + "/cell-%03d.small.gif  " + smallcellmovie )
+    execute("avconv -r 5 -i " + destdir + "/cell-%03d.small.gif -q 1   " + smallcellmovie ) # high quality / no compression
 else:
     print "skipping creating", smallcellmovie 
 
 if not os.path.isfile(insetcellmovie):
-    execute("avconv -r 5 -i " + destdir + "/cell-%03d.inset.gif  " + insetcellmovie ) 
+    execute("avconv -r 5 -i " + destdir + "/cell-%03d.inset.gif -q 1  " + insetcellmovie )  # high quality / no compression
 else:
     print "skipping creating", insetcellmovie
-
