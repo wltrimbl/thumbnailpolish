@@ -199,13 +199,14 @@ for l1 in lane:
     else:
         print "skipping creating", smalltile, "since it already exists"
     if not os.path.isfile( tinytile ) : 
-        execute("convert -resize 10%" + " -border 2 " + " ".join(filelist) + " +append " + tinytile ) 
+        execute("convert -resize 12.5%" + " -border 2 " + " ".join(filelist) + " +append " + tinytile ) 
     else:
         print "skipping creating", smalltile 
 
 largecellmovie = destdir + "/movie-lg.mp4"
-smallcellmovie = destdir + "/movie-sm.mov"
+smallcellmovie = destdir + "/movie-sm.mp4"
 insetcellmovie = destdir + "/movie-in.mp4"
+tinycellmovie = destdir + "/movie-ty.mp4"
 
 if not os.path.isfile(largecellmovie):
     execute("avconv -r 5 -i " + destdir + "/cell-%03d.gif  " + largecellmovie )  # default compression ca. -q 31 ok
@@ -216,8 +217,12 @@ if not os.path.isfile(smallcellmovie):
     execute("avconv -r 5 -i " + destdir + "/cell-%03d.small.gif -q 1   " + smallcellmovie ) # high quality / no compression
 else:
     print "skipping creating", smallcellmovie 
-
 if not os.path.isfile(insetcellmovie):
     execute("avconv -r 5 -i " + destdir + "/cell-%03d.inset.gif -q 1  " + insetcellmovie )  # high quality / no compression
 else:
     print "skipping creating", insetcellmovie
+if not os.path.isfile(tinycellmovie):
+    execute("avconv -r 5 -i " + destdir + "/cell-%03d.tiny.gif -q 1  " + tinycellmovie )  # high quality / no compression
+else:
+    print "skipping creating", tinycellmovie
+
