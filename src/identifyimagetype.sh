@@ -6,18 +6,51 @@
 f=$( ls L001/C1.1/s*[aA].jpg | head -n 1)
 if [[ "$( identify $f )" =~ .*608x300.* ]] 
     then 
-    echo MISEQ match 
-    echo MISEQ > type
+    echo images in MISEQ format 
+    echo MISEQ > thumbnailpolish.type
 elif [[ "$( identify $f )" =~ .*496x450.* ]] 
     then 
-    echo HISEQ match
-    echo HISEQ > type
+    echo images in HISEQ format
+    echo HISEQ > thumbnailpolish.type
 elif [[ "$( identify $f )" =~ .*542x450.* ]] 
     then 
-    echo HISEQ2 match
-    echo HISEQ2 > type 
+    echo images in HISEQ2 format
+    echo HISEQ2 > thumbnailpolish.type
 elif [[ "$( identify $f )" =~ .*576x300.* ]] 
     then 
-    echo GAII match
-    echo GAII > type 
+    echo images in GAII format
+    echo GAII > thumbnailpolish.type 
 fi
+
+if [[ -e "L001/C1.1/s_1_1112_A.jpg" ]] 
+    then
+    echo tree looks like HISEQ2 
+    echo HISEQ2  > thumbnailpolish.tree
+elif [[ -e "L001/C1.1/s_1_1101_A.jpg" ]]
+    then
+    echo tree looks like HISEQ 
+    echo HISEQ  > thumbnailpolish.tree
+elif [[ -e "L001/C1.1/s_1_99_a.jpg" ]]
+    then
+    echo tree looks like GAII 
+    echo GAII > thumbnailpolish.tree
+elif [[ -e "L001/C1.1/s_1_1_a.jpg" ]]
+    then
+    echo tree looks like MISEQ 
+    echo MISEQ > thumbnailpolish.tree
+elif [[ -e "L001/C1.1/s_1_1114_a.jpg" ]]
+    then
+    echo MISEQ2 > thumbnailpolish.tree
+fi
+
+for i in {1..600}
+    do
+    if [[ ! -d "L001/C$i.1" ]]
+        then
+        break 
+        fi
+    done
+echo Number of cycles: $i
+echo $i > thumbnailpolish.numcycles
+
+

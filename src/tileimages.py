@@ -18,33 +18,18 @@ def execute(execstring):
  
 def howmanycycles(somedir):
     '''Checks for the existence of directories for cycles, returns int.'''
-    for n in range(1, 600):
-        testdirname = somedir + "/" + "C%d.1" % n
-        print testdirname 
-        if not os.path.isdir(testdirname):
-            n = n - 1
-            break
-    return n
+    try:
+        a = int(open("thumbnailpolish.numcycles").read().strip())
+        return(a)
+    except IOError:
+        sys.exit("Can't find config file thumbnailimages.numcycles.") 
 
 def testhiseq(somedir):
-    if os.path.isfile("L001/C1.1/s_1_1112_A.jpg"):
-        return("HISEQ2")
-    elif os.path.isfile("L001/C1.1/s_1_1101_A.jpg"):
-        return("HISEQ")
-    elif os.path.isfile("L001/C1.1/s_1_99_a.jpg"):
-        return("GAII")
-    elif os.path.isfile("L001/C1.1/s_1_1_a.jpg"): 
-        return("MISEQ")
-    elif os.path.isfile("L001/C1.1/s_1_1114_a.jpg"): 
-        return("MISEQ2")
-    else: 
-        try:
-            a = open("type").read().strip() 
-            print "GOT it "+ a
-            return(a)
-        except IOError:
-            pass
-        return(0)
+    try:
+        a = open("thumbnailpolish.type").read().strip() 
+        return(a)
+    except IOError:
+        sys.exit("Can't find config file thumbnailimages.type") 
 
 TYPE = testhiseq("") 
 
