@@ -6,11 +6,14 @@
 #  make 
 SRCDIR = $(dir . )
 DESTDIR = $(dir . )
-
-TYPE = $(shell head -n 1 type)
+TYPE = $(shell head -n 1 thumbnailpolish.type)
 
 type:
 	identifyimagetype.sh
+	TYPE = $(shell head -n 1 thumbnailpolish.type)
+
+movie: 
+	tileimages.py
 
 # Different formats have different input files:  _a.jpg _c.jpg vs _A.jpg and _C.jpg
 ifeq ($(TYPE),HISEQ)
@@ -29,14 +32,14 @@ COLOR := $(subst _A.jpg,_color.gif,$(subst _a.jpg,_color.gif,$(wildcard $(SRCDIR
 CROP1 := $(subst _color.gif,_crop.gif,$(COLOR)) 
 CROP2 := $(subst _color.gif,_crop2.gif,$(COLOR)) 
 
-composite: 
+composite: all
 	tileimages.py 
 
-all:  $(COLOR) $(CROP1) $(CROP2)  type
+all:  $(COLOR) $(CROP1) $(CROP2)  thumbnailpolish.type
 
-color: $(COLOR) type
+color: $(COLOR) thumbnailpolish.type
 
-crop: $(CROP1) $(CROP2) type
+crop: $(CROP1) $(CROP2) thumbnailpolish.type
 
 %_1.gif : 
 ifeq ($(UPPER),0)
