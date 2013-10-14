@@ -68,9 +68,9 @@ else:
 
 NUMCYCLES = howmanycycles("L001")
 print "NUMCYCLES" , NUMCYCLES 
-
+CYCLES = range(1, NUMCYCLES+1)
 for l1 in lane:
-    for j in range(1, NUMCYCLES+1):
+    for j in CYCLES:
         filelist = []
   #     create set of strips "org"
         srcdir = "L00%s/C%s.1" % (l1, j )
@@ -123,7 +123,7 @@ for l1 in lane:
             print "can't find requisite ", filelist[0] , "needed to build ", tilefileh
 
 #     create whole-cell images cell-
-for j in range(1, NUMCYCLES+1):
+for j in CYCLES: 
     filelist = []
     for l1 in lane:
         srcdir    = "wholeimages" 
@@ -172,7 +172,7 @@ for l1 in lane:
     smalltile = destdir + "/tile-lane%s.small.gif" % (l1, )
     tinytile =  destdir + "/tile-lane%s.tiny.gif" % (l1, )
     filelist = []
-    for j in range(1, NUMCYCLES+1):
+    for j in CYCLES: 
         orhfile = srcdir + "/orh-%s_%03d.gif" % (l1, j) 
         filelist.append(orhfile)
     if not os.path.isfile( bigtile ):

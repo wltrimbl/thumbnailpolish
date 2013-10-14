@@ -8,7 +8,7 @@ SRCDIR = $(dir . )
 DESTDIR = $(dir . )
 TYPE = $(shell head -n 1 thumbnailpolish.type)
 
-type:
+thumbnailpolish.type:
 	identifyimagetype.sh
 	TYPE = $(shell head -n 1 thumbnailpolish.type)
 
