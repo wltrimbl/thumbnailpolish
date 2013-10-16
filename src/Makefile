@@ -3,14 +3,14 @@
 
 # usage:
 #  make configure   
-#  make 
+#  make composite
+
 SRCDIR = $(dir . )
 DESTDIR = $(dir . )
-TYPE = $(shell head -n 1 thumbnailpolish.type)
 
-thumbnailpolish.type:
-	identifyimagetype.sh
-	TYPE = $(shell head -n 1 thumbnailpolish.type)
+ifeq (,$(wildcard thumbnailpolish.type))
+	$(error thumbnailpolish.type does not exist, try running make configure)
+endif
 
 movie: 
 	tileimages.py
@@ -19,19 +19,23 @@ movie:
 COLOR := $(subst _A.jpg,_color.gif,$(subst _a.jpg,_color.gif,$(wildcard $(SRCDIR)/*/*/s*_a.jpg $(SRCDIR)/*/*/s*_A.jpg )))
 # This regular expression should find the auxillary files, should you want to colorize them
 AUX   := $(subst _A.jpg,_color.gif,$(subst _a.jpg,_color.gif,$(wildcard $(SRCDIR)/*/*/d*_a.jpg $(SRCDIR)/*/*/d*_A.jpg )))
-
+# crop1 contains the image of the tile
 CROP1 := $(subst _color.gif,_crop.gif,$(COLOR)) 
+# crop2 contains one of the closeup images
 CROP2 := $(subst _color.gif,_crop2.gif,$(COLOR)) 
+
+configure:
+	identifyimagetype.sh
 
 composite: all
 	tileimages.py 
 
-all:  $(COLOR) $(CROP1) $(CROP2)  thumbnailpolish.type
+all:  $(COLOR) $(CROP1) $(CROP2)
 
-color: $(COLOR) thumbnailpolish.type
-aux:   $(AUX) thumbnailpolish.type
+color: $(COLOR) 
+aux:   $(AUX)
 
-crop: $(CROP1) $(CROP2) thumbnailpolish.type
+crop: $(CROP1) $(CROP2)
 
 %_1.gif : 
 	$(eval TFILE = $(wildcard $(subst _1.gif,_T.jpg,$@) $(subst _1.gif,_t.jpg,$@)))
