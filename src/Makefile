@@ -31,17 +31,17 @@ color: $(COLOR) thumbnailpolish.type
 crop: $(CROP1) $(CROP2) thumbnailpolish.type
 
 %_1.gif : 
-	$(eval TFILE = $(wildcard $(subst _1.gif,_T.jpg,$@) $(subst _1.gif,_t.jpg,$@)))   #  match T or t
-	$(eval GFILE = $(wildcard $(subst _1.gif,_G.jpg,$@) $(subst _1.gif,_g.jpg,$@)))   #  match G or g
+	$(eval TFILE = $(wildcard $(subst _1.gif,_T.jpg,$@) $(subst _1.gif,_t.jpg,$@)))
+	$(eval GFILE = $(wildcard $(subst _1.gif,_G.jpg,$@) $(subst _1.gif,_g.jpg,$@)))
 	composite -compose minus $(TFILE) $(GFILE) $@
 	
 %_2.gif : %_1.gif 
-	$(eval AFILE = $(wildcard $(subst _2.gif,_A.jpg,$@) $(subst _2.gif,_a.jpg,$@)))   #  match A or a
+	$(eval AFILE = $(wildcard $(subst _2.gif,_A.jpg,$@) $(subst _2.gif,_a.jpg,$@)))
 	composite -compose plus $(AFILE) $^ $@
 
 %_color.gif : %_2.gif 
-	$(eval CFILE = $(wildcard $(subst _color.gif,_C.jpg,$@) $(subst _color.gif,_c.jpg,$@)))   #  match C or c
-	$(eval GFILE = $(wildcard $(subst _color.gif,_G.jpg,$@) $(subst _color.gif,_g.jpg,$@)))   #  match G or g
+	$(eval CFILE = $(wildcard $(subst _color.gif,_C.jpg,$@) $(subst _color.gif,_c.jpg,$@)))
+	$(eval GFILE = $(wildcard $(subst _color.gif,_G.jpg,$@) $(subst _color.gif,_g.jpg,$@)))
 	convert $^  $(CFILE) $(GFILE) -combine $@
 
 %_crop.gif : %_color.gif
