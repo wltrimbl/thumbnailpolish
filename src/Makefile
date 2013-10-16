@@ -3,64 +3,53 @@
 
 # usage:
 #  make configure   
-#  make 
+#  make composite
+
 SRCDIR = $(dir . )
 DESTDIR = $(dir . )
-TYPE = $(shell head -n 1 thumbnailpolish.type)
 
-thumbnailpolish.type:
-	identifyimagetype.sh
-	TYPE = $(shell head -n 1 thumbnailpolish.type)
+ifeq (,$(wildcard thumbnailpolish.type))
+	$(error thumbnailpolish.type does not exist, try running make configure)
+endif
 
 movie: 
 	tileimages.py
 
-# Different formats have different input files:  _a.jpg _c.jpg vs _A.jpg and _C.jpg
-ifeq ($(TYPE),HISEQ)
-        UPPER=1
-else ifeq ($(TYPE),HISEQ2)
-        UPPER=1
-else ifeq ($(TYPE),MISEQ)
-        UPPER=0
-else ifeq ($(TYPE),GAII)
-        UPPER=0
-endif
-
 # This regular expression finds all the files in the target tree
 COLOR := $(subst _A.jpg,_color.gif,$(subst _a.jpg,_color.gif,$(wildcard $(SRCDIR)/*/*/s*_a.jpg $(SRCDIR)/*/*/s*_A.jpg )))
-
+# This regular expression should find the auxillary files, should you want to colorize them
+AUX   := $(subst _A.jpg,_color.gif,$(subst _a.jpg,_color.gif,$(wildcard $(SRCDIR)/*/*/d*_a.jpg $(SRCDIR)/*/*/d*_A.jpg )))
+# crop1 contains the image of the tile
 CROP1 := $(subst _color.gif,_crop.gif,$(COLOR)) 
+# crop2 contains one of the closeup images
 CROP2 := $(subst _color.gif,_crop2.gif,$(COLOR)) 
+
+configure:
+	identifyimagetype.sh
 
 composite: all
 	tileimages.py 
 
-all:  $(COLOR) $(CROP1) $(CROP2)  thumbnailpolish.type
+all:  $(COLOR) $(CROP1) $(CROP2)
 
-color: $(COLOR) thumbnailpolish.type
+color: $(COLOR) 
+aux:   $(AUX)
 
-crop: $(CROP1) $(CROP2) thumbnailpolish.type
+crop: $(CROP1) $(CROP2)
 
 %_1.gif : 
-ifeq ($(UPPER),0)
-	composite -compose minus $(subst _1.gif,_t.jpg,$@) $(subst _1.gif,_g.jpg,$@) $@
-else
-	composite -compose minus $(subst _1.gif,_T.jpg,$@) $(subst _1.gif,_G.jpg,$@) $@
-endif
+	$(eval TFILE = $(wildcard $(subst _1.gif,_T.jpg,$@) $(subst _1.gif,_t.jpg,$@)))
+	$(eval GFILE = $(wildcard $(subst _1.gif,_G.jpg,$@) $(subst _1.gif,_g.jpg,$@)))
+	composite -compose minus $(TFILE) $(GFILE) $@
 	
 %_2.gif : %_1.gif 
-ifeq ($(UPPER),0)
-	composite -compose plus $(subst _2.gif,_a.jpg,$@) $(subst _2.gif,_1.gif,$@) $@
-else
-	composite -compose plus $(subst _2.gif,_A.jpg,$@) $(subst _2.gif,_1.gif,$@) $@
-endif
+	$(eval AFILE = $(wildcard $(subst _2.gif,_A.jpg,$@) $(subst _2.gif,_a.jpg,$@)))
+	composite -compose plus $(AFILE) $^ $@
 
 %_color.gif : %_2.gif 
-ifeq ($(UPPER),0)
-	convert $(subst _color.gif,_2.gif,$@)   $(subst _color.gif,_c.jpg, $@)  $(subst _color.gif,_g.jpg,$@)  -combine $@
-else
-	convert $(subst _color.gif,_2.gif,$@)   $(subst _color.gif,_C.jpg, $@)  $(subst _color.gif,_G.jpg,$@)  -combine $@
-endif
+	$(eval CFILE = $(wildcard $(subst _color.gif,_C.jpg,$@) $(subst _color.gif,_c.jpg,$@)))
+	$(eval GFILE = $(wildcard $(subst _color.gif,_G.jpg,$@) $(subst _color.gif,_g.jpg,$@)))
+	convert $^  $(CFILE) $(GFILE) -combine $@
 
 %_crop.gif : %_color.gif
 ifeq ($(TYPE),HISEQ)
