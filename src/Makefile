@@ -17,6 +17,8 @@ movie:
 
 # This regular expression finds all the files in the target tree
 COLOR := $(subst _A.jpg,_color.gif,$(subst _a.jpg,_color.gif,$(wildcard $(SRCDIR)/*/*/s*_a.jpg $(SRCDIR)/*/*/s*_A.jpg )))
+# This regular expression should find the auxillary files, should you want to colorize them
+AUX   := $(subst _A.jpg,_color.gif,$(subst _a.jpg,_color.gif,$(wildcard $(SRCDIR)/*/*/d*_a.jpg $(SRCDIR)/*/*/d*_A.jpg )))
 
 CROP1 := $(subst _color.gif,_crop.gif,$(COLOR)) 
 CROP2 := $(subst _color.gif,_crop2.gif,$(COLOR)) 
@@ -27,6 +29,7 @@ composite: all
 all:  $(COLOR) $(CROP1) $(CROP2)  thumbnailpolish.type
 
 color: $(COLOR) thumbnailpolish.type
+aux:   $(AUX) thumbnailpolish.type
 
 crop: $(CROP1) $(CROP2) thumbnailpolish.type
 
