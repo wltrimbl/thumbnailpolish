@@ -15,17 +15,6 @@ thumbnailpolish.type:
 movie: 
 	tileimages.py
 
-# Different formats have different input files:  _a.jpg _c.jpg vs _A.jpg and _C.jpg
-ifeq ($(TYPE),HISEQ)
-        UPPER=1
-else ifeq ($(TYPE),HISEQ2)
-        UPPER=1
-else ifeq ($(TYPE),MISEQ)
-        UPPER=0
-else ifeq ($(TYPE),GAII)
-        UPPER=0
-endif
-
 # This regular expression finds all the files in the target tree
 COLOR := $(subst _A.jpg,_color.gif,$(subst _a.jpg,_color.gif,$(wildcard $(SRCDIR)/*/*/s*_a.jpg $(SRCDIR)/*/*/s*_A.jpg )))
 
@@ -42,25 +31,18 @@ color: $(COLOR) thumbnailpolish.type
 crop: $(CROP1) $(CROP2) thumbnailpolish.type
 
 %_1.gif : 
-ifeq ($(UPPER),0)
-	composite -compose minus $(subst _1.gif,_t.jpg,$@) $(subst _1.gif,_g.jpg,$@) $@
-else
-	composite -compose minus $(subst _1.gif,_T.jpg,$@) $(subst _1.gif,_G.jpg,$@) $@
-endif
+	$(eval TFILE = $(wildcard $(subst _1.gif,_T.jpg,$@) $(subst _1.gif,_t.jpg,$@)))   #  match T or t
+	$(eval GFILE = $(wildcard $(subst _1.gif,_G.jpg,$@) $(subst _1.gif,_g.jpg,$@)))   #  match G or g
+	composite -compose minus $(TFILE) $(GFILE) $@
 	
 %_2.gif : %_1.gif 
-ifeq ($(UPPER),0)
-	composite -compose plus $(subst _2.gif,_a.jpg,$@) $(subst _2.gif,_1.gif,$@) $@
-else
-	composite -compose plus $(subst _2.gif,_A.jpg,$@) $(subst _2.gif,_1.gif,$@) $@
-endif
+	$(eval AFILE = $(wildcard $(subst _2.gif,_A.jpg,$@) $(subst _2.gif,_a.jpg,$@)))   #  match A or a
+	composite -compose plus $(AFILE) $^ $@
 
 %_color.gif : %_2.gif 
-ifeq ($(UPPER),0)
-	convert $(subst _color.gif,_2.gif,$@)   $(subst _color.gif,_c.jpg, $@)  $(subst _color.gif,_g.jpg,$@)  -combine $@
-else
-	convert $(subst _color.gif,_2.gif,$@)   $(subst _color.gif,_C.jpg, $@)  $(subst _color.gif,_G.jpg,$@)  -combine $@
-endif
+	$(eval CFILE = $(wildcard $(subst _color.gif,_C.jpg,$@) $(subst _color.gif,_c.jpg,$@)))   #  match C or c
+	$(eval GFILE = $(wildcard $(subst _color.gif,_G.jpg,$@) $(subst _color.gif,_g.jpg,$@)))   #  match G or g
+	convert $^  $(CFILE) $(GFILE) -combine $@
 
 %_crop.gif : %_color.gif
 ifeq ($(TYPE),HISEQ)
