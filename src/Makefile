@@ -8,9 +8,11 @@
 SRCDIR = $(dir . )
 DESTDIR = $(dir . )
 
-ifeq (,$(wildcard thumbnailpolish.type))
-	$(error thumbnailpolish.type does not exist, try running make configure)
-endif
+TYPE = $(shell head -n 1 thumbnailpolish.type)
+
+#ifeq (,$(wildcard thumbnailpolish.type))
+#	$(error thumbnailpolish.type does not exist, try running make configure)
+#endif
 
 movie: 
 	tileimages.py
