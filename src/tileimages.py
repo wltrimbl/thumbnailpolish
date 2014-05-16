@@ -66,7 +66,6 @@ elif TYPE == "MISEQ2" : # MISEQ2 recipe
 elif TYPE == "NEXTSEQ" : # NEXTSEQ
     print "Using NEXTSEQ recipe"
     lane = [ "1", "2", "3", "4" ]
-    lane = [ "1" ]  # for testing
     iter1 = [ '11', '12', '13', '21', '22', '23']
     iter2 = [ '101', '106', '112', '201', '206', '212', '301', '306', '312'] 
 
@@ -144,9 +143,12 @@ for j in CYCLES:
     cellinsettarget = destdir + "/cell-%03d.inset.gif" % (j,)
     celltinytarget = destdir + "/cell-%03d.tiny.gif" % (j,)
 # create whole cell images
+    rotate = "90"
+    if TYPE == "NEXTSEQ":
+        rotate = "270"
     if not os.path.isfile( celltarget ) : 
         if os.path.isfile( filelist[0] ) : 
-            execute("convert -border 2 -rotate 90 -append " + " ".join(filelist) + " " + celltarget )
+            execute("convert -border 2 -rotate " + rotate + " -append " + " ".join(filelist) + " " + celltarget )
         else: 
             print "skipping creating", celltarget, "because requisite", filelist[0], "not found" 
     else:
@@ -200,8 +202,11 @@ smallcellmovie = destdir + "/movie-sm.mp4"
 insetcellmovie = destdir + "/movie-in.mp4"
 tinycellmovie = destdir + "/movie-ty.mp4"
 
+large_quality = " "
+if TYPE == "NEXTSEQ":
+    large_quality = " -q 1 "
 if not os.path.isfile(largecellmovie):
-    execute("avconv -r 5 -i " + destdir + "/cell-%03d.gif  " + largecellmovie )  # default compression ca. -q 31 ok
+    execute("avconv -r 5 -i " + destdir + "/cell-%03d.gif  " + large_quality + largecellmovie )  # default compression ca. -q 31 ok
 else:
     print "skipping creating", largecellmovie
 
