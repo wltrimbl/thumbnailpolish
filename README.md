@@ -35,7 +35,8 @@ into other software, and pretty much everything else is allowed.
 
 ## Acknowledgements
 *   Sarah Owens (Argonne National Laboratory) and
-*   Scott Tighe (University of Vermont)  have provided data and have
+*   Scott Tighe (University of Vermont)  
+*   Zach Herbert (Dana Farber Cancer Institute) have provided data and have
 helped interpret billions upon billions of little colored spots.  
 
 ![Color rendering of diagnostic tile image](img/s_4_1312_color.gif)
