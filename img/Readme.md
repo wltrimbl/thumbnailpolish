@@ -15,3 +15,7 @@ Images of whole cells:
 
 Images of one lane, at one cycle:
     orh-5_099.gif
+
+Images of a single nextseq lane:
+    nextseq-cell.small.gif
+    nextseq-cell.tiny.gif
