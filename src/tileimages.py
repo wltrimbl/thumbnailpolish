@@ -26,7 +26,7 @@ def howmanycycles(somedir):
 
 def testhiseq(somedir):
     try:
-        a = open("thumbnailpolish.type").read().strip() 
+        a = open("thumbnailpolish.tree").read().strip() 
         return(a)
     except IOError:
         sys.exit("Can't find config file thumbnailimages.type") 
@@ -53,8 +53,8 @@ elif TYPE == "GAII":   # GAII  doesn't count the same way
     iter1 = [""] 
     iter2 =  [ "%d" % i for i in range(1, 51)]    # we use iter2 to name the intermediates
     gaiitiles = zip(tiles, tile2)
-elif TYPE == "MISEQ" : # MISEQ recipe
-    print "Using MISEQ recipe"
+elif TYPE == "MISEQ1" : # MISEQ recipe
+    print "Using MISEQ1 recipe"
     lane = [ "1" ]
     iter1 = [""] 
     iter2 = ["1", "2", "3", "4", "5", "6", "7", "8"] 
@@ -63,6 +63,14 @@ elif TYPE == "MISEQ2" : # MISEQ2 recipe
     lane = [ "1" ]
     iter1 = [ '11', '21']
     iter2 = [ '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14'] 
+elif TYPE == "NEXTSEQ" : # NEXTSEQ
+    print "Using NEXTSEQ recipe"
+    lane = [ "1", "2", "3", "4" ]
+    lane = [ "1" ]
+    iter1 = [ '11', '12', '13', '21', '22', '23']
+    iter2 = [ '101', '106', '112', '201', '206', '212', '301', '306', '312'] # A
+    iter2 = [ '101', '201', '301', '106', '206', '306', '112', '212', '312'] # B
+
 else:
     sys.exit("Can't identify format")
 
@@ -158,7 +166,7 @@ for j in CYCLES:
         if os.path.isfile( cellsmalltarget ):
             if TYPE == "HISEQ" or TYPE == "HISEQ2" :
                 execute("convert %s  -page +700+200 L001/C%d.1/s_1_%s%s_crop2.gif  -mosaic %s" % (cellsmalltarget, j, iter1[0], iter2[0], cellinsettarget) )
-            if TYPE == "MISEQ" or TYPE == "GAII" or TYPE == "MISEQ2" :
+            if TYPE == "MISEQ1" or TYPE == "GAII" or TYPE == "MISEQ2" :
                 execute("convert -append %s  L001/C%d.1/s_1_%s%s_crop2.gif  -mosaic %s" % (cellsmalltarget, j, iter1[0], iter2[0], cellinsettarget) )
         else:
             print "skipping creating", cellinsettarget, "because requisite", cellsmalltarget, "is missing"
