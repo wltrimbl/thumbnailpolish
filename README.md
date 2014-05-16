@@ -40,3 +40,6 @@ into other software, and pretty much everything else is allowed.
 helped interpret billions upon billions of little colored spots.  
 
 ![Color rendering of diagnostic tile image](img/s_4_1312_color.gif)
+
+![Color rendering of Nextseq flowcel images](img/nextseq-cell.tiny.gif)
+
