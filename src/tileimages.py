@@ -66,10 +66,9 @@ elif TYPE == "MISEQ2" : # MISEQ2 recipe
 elif TYPE == "NEXTSEQ" : # NEXTSEQ
     print "Using NEXTSEQ recipe"
     lane = [ "1", "2", "3", "4" ]
-    lane = [ "1" ]
+    lane = [ "1" ]  # for testing
     iter1 = [ '11', '12', '13', '21', '22', '23']
-    iter2 = [ '101', '106', '112', '201', '206', '212', '301', '306', '312'] # A
-    iter2 = [ '101', '201', '301', '106', '206', '306', '112', '212', '312'] # B
+    iter2 = [ '101', '106', '112', '201', '206', '212', '301', '306', '312'] 
 
 else:
     sys.exit("Can't identify format")
