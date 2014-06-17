@@ -18,7 +18,15 @@ x 4 colors = 642,048 image files in 1672 directories.
 This tool builds false-color images of the four color channels and
 then composities the color images of each tile into images of lanes, 
 flowcells, and quicktime movies of the entire flowcell.
+
 Examples of some of the output images are in the `img` directory.
+
+Videos of some of our sequencing runs from 2013 can be found here 
+[Illumina flowcell visualizations](http://tinyurl.com/sequencingisbeautiful)
+[Illumina flowcell rag](http://tinyurl.com/illuminaflowcellrag)
+
+And downloadable videos for teaching can be found here
+[Flowcell directory](http://www.mcs.anl.gov/~trimble/flowcell)
 
 ## Prerequisites
 This package depends on python, make, imagemagick, and libav.
@@ -34,10 +42,12 @@ into other software, and pretty much everything else is allowed.
 *   Will Trimble (Argonne National Laboratory)
 
 ## Acknowledgements
-*   Sarah Owens (Argonne National Laboratory) and
-*   Scott Tighe (University of Vermont)  
-*   Zach Herbert (Dana Farber Cancer Institute) have provided data and have
-helped interpret billions upon billions of little colored spots.  
+The following people 
+*   Sarah Owens (Argonne National Laboratory) (Hiseq and Miseq) 
+*   Scott Tighe (University of Vermont) (Hiseq) 
+*   Zach Herbert (Dana Farber Cancer Institute)  (Nextseq)
+have provided data and have helped interpret billions upon billions of 
+little colored spots.  
 
 ![Color rendering of diagnostic tile image](img/s_4_1312_color.gif)
 
