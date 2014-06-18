@@ -21,9 +21,10 @@ flowcells, and quicktime movies of the entire flowcell.
 
 Examples of some of the output images are in the `img` directory.
 
-Videos of some of our sequencing runs from 2013 can be found here 
-[Illumina flowcell visualizations](http://tinyurl.com/sequencingisbeautiful)
-[Illumina flowcell rag](http://tinyurl.com/illuminaflowcellrag)
+## Videos
+Videos of some of our sequencing runs from 2013 can be found on youtube 
+1.  [Illumina flowcell visualizations](http://tinyurl.com/sequencingisbeautiful)
+2.  [Illumina flowcell rag](http://tinyurl.com/illuminaflowcellrag)
 
 And downloadable videos for teaching can be found here
 [Flowcell directory](http://www.mcs.anl.gov/~trimble/flowcell)
