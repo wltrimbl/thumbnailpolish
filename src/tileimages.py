@@ -2,7 +2,7 @@
 '''This script composites color thumbnails into larger images
  representing entire lanes and entire flowcells per image'''
 
-import os, sys
+import os, sys, glob
 from subprocess import check_output, CalledProcessError
 
 def execute(execstring):
@@ -15,6 +15,47 @@ def execute(execstring):
             print "Warning!  some files not found!"
         else:
             sys.exit("Freakout!")
+
+def detecttype(somedir):
+    firstfile = (glob.glob(somedir+"/L001/C1.1/s*[aA].jpg") + glob.glob(somedir+"/L001/C1.1/s*red.jpg"))[0]
+    imagesize = check_output(["identify", firstfile])
+    if imagesize.find("608x300 ") > 0:
+        TYPE = "MISEQ" 
+    elif imagesize.find("496x450 ") > 0:
+        TYPE = "HISEQ" 
+    elif imagesize.find("542x450 ") > 0:
+        TYPE = "HISEQ2" 
+    elif imagesize.find("576x300 ") > 0:
+        TYPE = "GAII" 
+    elif imagesize.find("700x300 ") > 0:
+        TYPE = "NEXTSEQ" 
+    else:
+        sys.exit("Unrecognized thumbanil size "+ imagesize + firstfile)
+
+    if os.path.isfile(somedir + "/L001/C1.1/s_1_1112_A.jpg"):
+        TREE = "HISEQ2" 
+    elif os.path.isfile(somedir + "/L001/C1.1/s_1_1101_A.jpg"):
+        TREE = "HISEQ" 
+    elif os.path.isfile(somedir + "/L001/C1.1/s_1_99_a.jpg"):
+        TREE = "GAII" 
+    elif os.path.isfile(somedir + "/L001/C1.1/s_1_1_a.jpg"):
+        TREE = "MISEQ1" 
+    elif os.path.isfile(somedir + "/L001/C1.1/s_1_1114_a.jpg"):
+        TREE = "MISEQ2" 
+    elif os.path.isfile(somedir + "/L001/C1.1/s_1_11101_red.jpg"):
+        TREE = "NEXTSEQ"     
+    else:
+        sys.exit("Unrecognized tree structure" )
+    NUMCYCLES = 0
+    for i in range(1, 600):
+        if not os.path.isfile(somedir+"/L001/C"+repr(i)+".1"):
+             NUMCYCLES = i   
+             break
+   # We are writing these files to communicate with MAKE
+    open(somedir + "/thumbnailpolish.numcycles", "w").write(str(NUMCYCLES) + "\n")
+    open(somedir + "/thumbnailpolish.type", "w").write(TYPE + "\n")
+    open(somedir + "/thumbnailpolish.tree", "w").write(TREE + "\n")
+    print TYPE, TREE, NUMCYCLES
 
 def howmanycycles(somedir):
     '''Checks for the existence of directories for cycles, returns int.'''
@@ -30,6 +71,8 @@ def testhiseq(somedir):
         return a
     except IOError:
         sys.exit("Can't find config file thumbnailimages.type")
+
+detecttype(".")
 
 TYPE = testhiseq("")
 
