@@ -20,7 +20,7 @@ def detecttype(somedir):
     firstfile = (glob.glob(somedir+"/L001/C1.1/s*[aA].jpg") + glob.glob(somedir+"/L001/C1.1/s*red.jpg"))[0]
     imagesize = check_output(["identify", firstfile])
     if imagesize.find("608x300 ") > 0:
-        TYPE = "MISEQ1"
+        TYPE = "MISEQ"
     elif imagesize.find("496x450 ") > 0:
         TYPE = "HISEQ"
     elif imagesize.find("542x450 ") > 0:
@@ -48,8 +48,8 @@ def detecttype(somedir):
         sys.exit("Unrecognized tree structure" )
     NUMCYCLES = 0
     for i in range(1, 600):
-        if not os.path.isfile(somedir+"/L001/C"+repr(i)+".1"):
-             NUMCYCLES = i
+        if not os.path.isdir(somedir+"/L001/C"+repr(i)+".1"):
+             NUMCYCLES = i - 1
              break
    # We are writing these files to communicate with MAKE
     open(somedir + "/thumbnailpolish.numcycles", "w").write(str(NUMCYCLES) + "\n")
@@ -99,12 +99,12 @@ def main():
         iter1 = [""]
         iter2 = ["%d" % i for i in range(1, 51)]    # we use iter2 to name the intermediates
         gaiitiles = zip(tiles, tile2)
-    elif TYPE == "MISEQ1": # MISEQ recipe
+    elif TYPE == "MISEQ" and TREE == "MISEQ1": # MISEQ recipe
         print "Using MISEQ1 recipe"
         lane = ["1"]
         iter1 = [""]
         iter2 = ["1", "2", "3", "4", "5", "6", "7", "8"]
-    elif TYPE == "MISEQ2": # MISEQ2 recipe
+    elif TYPE == "MISEQ" and TREE == "MISEQ2": # MISEQ2 recipe
         print "Using MISEQ2 recipe"
         lane = ["1"]
         iter1 = ['11', '21']
